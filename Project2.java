@@ -149,7 +149,7 @@ public class Project2{
 	}
 	public static void Frequency(String [] args) throws FileNotFoundException{
 	//This method reports the frequency of each jackpot and bonus number, in a certain categry supplied by the user. 
-	int max = 7, numEven = 0, numOdd = 0;
+	int max = 7;
 	if(Integer.parseInt(args[0]) == 2)
 		max = 8;
 	String criteria = "";
@@ -157,7 +157,7 @@ public class Project2{
 		criteria = "A";
 	else
 		criteria = args[1];
-	boolean doCriteria = true, allEven, allOdd;
+	boolean doCriteria = true;
 	int [] numArray = new int[45];
 	String [] fileItem;
 	File inputFile = new File("SampleLottoData.txt");
@@ -179,36 +179,10 @@ public class Project2{
 				for(int i = 1; i < max; i++)
 					numArray[(Integer.parseInt(fileItem[i]))-1]++;
 			}
-			if(criteria.equalsIgnoreCase("A"))
-			{
-				allEven = true;
-				allOdd = true;
-				for(int i = 1; i < max; i++)
-				{
-					if((Integer.parseInt(fileItem[i]))%2 == 0)
-						allOdd = false;
-					else
-						allEven = false;
-				}
-				if(allEven)
-					numEven++;
-				else if(allOdd)
-					numOdd++;
-			}
-				
-				
 		}
 		fileReader.close();
 		for(int i = 0; i < numArray.length; i++)
 			System.out.println("The number " + (i + 1) + " occurred " + numArray[i] + " times.");
-		if(criteria.equalsIgnoreCase("A"))
-		{
-			if(max == 7)
-				System.out.println("Number of times all jackpot numbers were even: " + numEven + "\nNumber of times all jackpot numbers were odd: " + numOdd);
-			else
-				System.out.println("Number of times all jackpot and bonus numbers were even: " + numEven + "\nNumber of times all jackpot and bonus numbers were odd: " + numOdd);		
-			
-		}
 	}
 	else
 		System.err.println("Error: File does not exist");
@@ -319,6 +293,166 @@ public class Project2{
 
 
 	}
+	public static void JackpotAndBonus (int bonusOrNot, String[] numbersString) throws IOException
+	{
+		String result = "";
+		int [] numbersInteger = new int [6];
+		int bonusNumber = 0;
+		//Getting the bonus number if the is one and putting it into an integer value
+		if(bonusOrNot == 1)
+			bonusNumber = Integer.parseInt(numbersString[6]);
+		//putting the jackpot numbers into an array.
+		for(int i = 0; i < numbersInteger.length ; ++i) 
+		{
+			numbersInteger[i] = Integer.parseInt(numbersString[i]);
+		}
+		//Sorting the numbers into ascending sequence
+		for(int i=1; i<numbersInteger.length; i++) 
+		{
+			boolean is_sorted = true;
+
+			for(int j=0; j<numbersInteger.length - i; j++) 
+			{
+				if(numbersInteger[j] > numbersInteger[j+1]) 
+				{
+				int temp = numbersInteger[j];
+				numbersInteger[j] = numbersInteger[j+1];
+				numbersInteger[j+1] = temp;
+				is_sorted = false;
+				}
+			} 
+			if(is_sorted) break;
+		}
+		//this checks to see if the numbers supplied are unique.
+		int dupCounter = 0;
+		for(int i = 0; i < numbersInteger.length-1 ; i++)
+		{
+			if(numbersInteger[i] != numbersInteger[i+1])
+				dupCounter ++;
+		}
+		if(dupCounter != numbersInteger.length-1)
+		{
+			System.out.print("Most provide unique numbers");
+			System.exit(0);
+		}
+		
+		File openedFile;
+		openedFile = new File("SampleLottoData.txt");
+		int [] winnings = new int [4];
+		int [] bonusWinnings = new int [4];
+		String aLineFromFile = "";
+		int [] lineFromFile = new int [6];
+		int bonusNumberFromFile;
+		String [] arrayLineFromFile;
+		if(!openedFile.exists())
+		{
+			System.out.print("Cannot find file");
+			System.exit(0);
+		}
+		else
+		{
+			Scanner in = new Scanner(openedFile);
+			while(in.hasNext())
+			{
+				int counter = 1;
+				aLineFromFile = in.nextLine();
+				arrayLineFromFile = aLineFromFile.split(",");
+				for(int d = 1; d < arrayLineFromFile.length - 2; d++)
+					lineFromFile[d-1] = Integer.parseInt(arrayLineFromFile[d]); 
+				boolean found;
+				bonusNumberFromFile = Integer.parseInt(arrayLineFromFile[7]);
+				//reads entry from the file and increments a counter if the values are the same
+				for(int i = 0; i < numbersInteger.length - 1; i++)
+				{	
+					found = false;
+					for(int c = 0; c < lineFromFile.length - 1 && !found; c++)
+					{
+						if(numbersInteger[i] == lineFromFile[c])
+						{
+							counter ++;
+							found = true;
+						}
+					}
+				}
+				//this keeps track of both the winnings with and without bonus number in 2 different arrays.
+				if(counter >= 3)
+				{
+					if(bonusOrNot != 1)
+					{
+						switch(counter)
+						{
+							case 3: winnings[0]++;		break;
+							case 4: winnings[1]++;		break;
+							case 5: winnings[2]++;		break;
+							case 6: winnings[3]++;		break;
+						}
+					}
+					if(bonusOrNot == 1)
+					{
+						if(bonusNumber == bonusNumberFromFile)
+						{
+							switch(counter)
+							{
+							case 3: bonusWinnings[0]++;		break;
+							case 4: bonusWinnings[1]++;		break;
+							case 5: bonusWinnings[2]++;		break;
+							case 6: bonusWinnings[3]++;		break;
+							}
+						}
+						else
+						{
+							switch(counter)
+							{
+							case 3: winnings[0]++;		break;
+							case 4: winnings[1]++;		break;
+							case 5: winnings[2]++;		break;
+							case 6: winnings[3]++;		break;
+							}
+		
+						}
+					}	
+				}
+			}
+			//this is the outputting part of the code
+			boolean oneWinAtLeast = false;
+			for(int i = 0;i<winnings.length && !oneWinAtLeast; i++)
+			{
+				if(winnings[i] != 0) 
+				oneWinAtLeast = true;
+			}		
+			for(int i = 0;i<bonusWinnings.length && !oneWinAtLeast; i++)
+			{
+				if(bonusWinnings[i] != 0) 
+				oneWinAtLeast = true;
+			}		
+			if(oneWinAtLeast = false)
+				result += "No winnings from the numbers supplied";
+			else
+			{
+				result += "The number supplied had:";
+				if(bonusOrNot == 0)
+				{
+					for(int i = 0; i < winnings.length - 1; i++)
+					{
+						if(winnings[i] != 0)
+							result += "\n" + (i+3) + " winning numbers " + winnings[i] + " time(s).";
+					}
+				}
+				else
+				{
+					for(int i = 0; i < bonusWinnings.length - 1; i++)
+					{
+							if(winnings[i] != 0)
+								result += "\n" + (i+3) + " winning numbers " + winnings[i] + " time(s) but no winning bonus number.";
+							if(bonusWinnings[i] != 0)
+								result += "\n" + (i+3) + " winning numbers " + winnings[i] + " time(s) and a winning bonus number.";
+					}
+				}
+			}	
+			System.out.print(result);
+		}
+	}
+		
 
 
 
