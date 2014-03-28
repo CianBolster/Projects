@@ -97,9 +97,84 @@ public class Project3{
 
 	public static void DeleteDictionary(){}
 
-	public static void FrequencyWordCount(){}
+	public static void FrequencyWordCount()
+	{
+		int [] frequency = new int [26];
+		String lowerWord = "";
+		String resultsMessage = "";
+		System.out.print("The dictionary contains " + dictionaryArrayList.size() + " words in total.");
+		for(int i = 0; i < dictionaryArrayList.size(); i++)
+		{
+			lowerWord = dictionaryArrayList.get(i);
+			lowerWord = lowerWord.toLowerCase();
+			char c = lowerWord.charAt(0);
+			frequency[c-97] += 1;
+		}
+		int counter = 0;
+		System.out.print("\nThe frequency of the words that begin with each letter of the alphabet is as follows:\n");
+		for(int i = 0; i < frequency.length; i++)
+		{
+			int ch = i + 65;
+			char c = (char) ch;
+			if(counter%7 == 0)
+				resultsMessage+= "\n";
+			resultsMessage +=  c + ":" + frequency[i] + "\t";
+			counter += 1;
+		}
+		System.out.println(resultsMessage+"\n");
+	}
 
-	public static void LongesyShortestPalindrome(){}
+	public static void LongesyShortestPalindrome()
+	{
+		String result = "";
+		char aChar;
+		int lengthArray [] = new int [dictionaryArrayList.size()];					//this parallel array holds the length of each word. Implemented to remove excess use of .length() method
+		if(dictionaryArrayList.size() > 1)											//This checks whether it is bigger than one word
+		{
+			for(index = 0; index < dictionaryArrayList.size(); index++)
+			{
+				String tempTrimmed = "";
+				for(int i = 0; i < (dictionaryArrayList.get(index).length()); i++)
+				{
+					aChar = (dictionaryArrayList.get(index)).charAt(i);
+					if (Character.isLetterOrDigit(aChar) || Character.isWhitespace(aChar))
+						tempTrimmed += aChar;
+				}
+				if(index == 0)
+				{
+					maxInt = tempTrimmed.length();
+					minInt = tempTrimmed.length();
+				}
+				lengthArray[index] = tempTrimmed.length();							//We go through the string array, placing the length of each word into the lnegth array
+				if((lengthArray[index]) > maxInt)									//If it's greater than maxInt, then maxInt becomes that value
+					maxInt = lengthArray[index];									//the opposite happens for minInt
+				else if ((lengthArray[index]) < minInt)
+					minInt = lengthArray[index];
+			}
+			result = "The maximum length of a word in this sentence is " + maxInt +					//Here we set up the results
+												"\nThe words with this length are: ";				//If a word is the same length as the max or min value it is printed
+			for(index = 0; index < dictionaryArrayList.size(); index++)								//All the words with a length of -a can therefore not be printed
+			{
+				if(lengthArray[index] == maxInt)
+				{
+					if(counter%8 == 0)
+					{
+						result += "\n";
+					}
+					result += dictionaryArrayList.get(index) + "\t";
+					counter ++;
+				}
+			}
+			result += "\nThe minimum length of a word in this sentence is " + minInt +
+												"\nThe words with this length are: ";
+			for(index = 0; index < dictionaryArrayList.size(); index++)
+			{
+				if(lengthArray[index] == minInt)
+					result += "\n" + dictionaryArrayList.get(index);
+			}
+		}
+		System.out.print(result+"\n");
+	}
 
 	public static void AddPassage(){
 
