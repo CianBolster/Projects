@@ -126,6 +126,7 @@ public class Project3{
 
 	public static void LongesyShortestPalindrome()
 	{
+		int index, maxInt = 0, minInt = 0, count, counter = 0;
 		String result = "";
 		char aChar;
 		int lengthArray [] = new int [dictionaryArrayList.size()];					//this parallel array holds the length of each word. Implemented to remove excess use of .length() method
