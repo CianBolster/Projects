@@ -128,53 +128,102 @@ public class Project3{
 	{
 		int index, maxInt = 0, minInt = 0, count, counter = 0;
 		String result = "";
-		char aChar;
-		int lengthArray [] = new int [dictionaryArrayList.size()];					//this parallel array holds the length of each word. Implemented to remove excess use of .length() method
-		if(dictionaryArrayList.size() > 1)											//This checks whether it is bigger than one word
+		String palindromeResult = "";
+		boolean atLeastOnePal = false;
+		int [] palindromePosition = new int [dictionaryArrayList.size()];
+		char aChar = 'x', bChar;
+		int lengthArray [] = new int [dictionaryArrayList.size()];					
+		if(dictionaryArrayList.size() > 1)											
 		{
 			for(index = 0; index < dictionaryArrayList.size(); index++)
 			{
 				String tempTrimmed = "";
+				String tempReverse = "";
 				for(int i = 0; i < (dictionaryArrayList.get(index).length()); i++)
 				{
 					aChar = (dictionaryArrayList.get(index)).charAt(i);
 					if (Character.isLetterOrDigit(aChar) || Character.isWhitespace(aChar))
 						tempTrimmed += aChar;
 				}
+				for(int i = tempTrimmed.length()-1; i >= 0 ; i--)
+				{
+					bChar = tempTrimmed.charAt(i);
+					if (Character.isLetterOrDigit(aChar) || Character.isWhitespace(aChar))
+						tempReverse += bChar;
+				}
+				if(tempReverse.equalsIgnoreCase(tempTrimmed))
+				{
+					palindromePosition[index]++;
+					atLeastOnePal = true;
+				}
 				if(index == 0)
 				{
 					maxInt = tempTrimmed.length();
 					minInt = tempTrimmed.length();
 				}
-				lengthArray[index] = tempTrimmed.length();							//We go through the string array, placing the length of each word into the lnegth array
-				if((lengthArray[index]) > maxInt)									//If it's greater than maxInt, then maxInt becomes that value
-					maxInt = lengthArray[index];									//the opposite happens for minInt
+				lengthArray[index] = tempTrimmed.length();							
+				if((lengthArray[index]) > maxInt)									
+					maxInt = lengthArray[index];									
 				else if ((lengthArray[index]) < minInt)
 					minInt = lengthArray[index];
 			}
-			result = "The maximum length of a word in this sentence is " + maxInt +					//Here we set up the results
-												"\nThe words with this length are: ";				//If a word is the same length as the max or min value it is printed
-			for(index = 0; index < dictionaryArrayList.size(); index++)								//All the words with a length of -a can therefore not be printed
+			if(!(dictionaryArrayList.isEmpty()))
 			{
-				if(lengthArray[index] == maxInt)
+				result = "\nThe maximum length of a word in this dictionary file is " + maxInt +					
+												"\nThe words with this length are: ";				
+				for(index = 0; index < dictionaryArrayList.size(); index++)								
 				{
-					if(counter%8 == 0)
+					if(lengthArray[index] == maxInt)
 					{
-						result += "\n";
+						if(counter%8 == 0)
+						{
+							result += "\n";
+						}
+						result += dictionaryArrayList.get(index) + "\t";
+						counter ++;
 					}
-					result += dictionaryArrayList.get(index) + "\t";
-					counter ++;
 				}
+				counter = 0;
+				result +="\n___________________________________________________________________________________________________________________\n";
+				result += "\nThe minimum length of a word in this sentence is " + minInt +
+													"\nThe words with this length are: ";
+				for(index = 0; index < dictionaryArrayList.size(); index++)
+				{
+					if(lengthArray[index] == minInt)
+					{
+						if(counter%8 == 0)
+						{
+							result += "\n";
+						}
+						result += dictionaryArrayList.get(index) + "\t";
+						counter++;
+					}
+				}
+				counter = 0;
+				result +="\n___________________________________________________________________________________________________________________";
+				if(atLeastOnePal)
+				{
+					result += "\n\nThe following words are palindromes:";
+					for(index = 0; index < dictionaryArrayList.size(); index ++)
+					{
+						if(palindromePosition[index] == 1)
+						{
+							if(counter%8 == 0)
+							{
+								result += "\n";
+							}
+							result += dictionaryArrayList.get(index) + "\t";
+						}
+					}
+				}
+				else
+					result += "\n\nThere are no plaindromes in the dictionary file as of now.";
 			}
-			result += "\nThe minimum length of a word in this sentence is " + minInt +
-												"\nThe words with this length are: ";
-			for(index = 0; index < dictionaryArrayList.size(); index++)
-			{
-				if(lengthArray[index] == minInt)
-					result += "\n" + dictionaryArrayList.get(index);
-			}
+			else
+				result = "The file contains no words as of yet thus has no longest or shorest words and no words that are palindromes";
 		}
-		System.out.print(result+"\n");
+		result +="\n___________________________________________________________________________________________________________________";
+		System.out.print(result+"\n\n");
 	}
 
 	public static void AddPassage(){
